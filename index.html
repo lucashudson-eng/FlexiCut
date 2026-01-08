@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Imagens Pro Web</title>
+    
+    <!-- CSS Separado -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Configuração do Módulo OpenCV -->
+    <script>
+        var cvReady = false;
+        var Module = {
+            onRuntimeInitialized: function() {
+                cvReady = true;
+                const msg = document.getElementById('loading-msg');
+                if(msg) msg.innerText = "Arraste uma imagem aqui ou clique em 'Selecionar'";
+                console.log("OpenCV Ready");
+            }
+        };
+    </script>
+    <!-- OpenCV CDN -->
+    <script async src="https://docs.opencv.org/4.5.4/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div id="top-bar">
+        <button onclick="document.getElementById('file-input').click()">Selecionar Imagem</button>
+        <input type="file" id="file-input" accept="image/*">
+        
+        <span style="margin-left: 10px; color: #ccc;">Salvar como:</span>
+        <div class="input-group">
+            <input type="text" id="filename-input" placeholder="nome_arquivo" value="imagem_editada">
+            <span id="ext-label">.jpg</span>
+        </div>
+        
+        <button id="btn-save" onclick="saveImage()">Salvar Recorte</button>
+    </div>
+
+    <div id="canvas-container">
+        <div id="loading-msg">Carregando OpenCV...<br>Isso pode levar alguns segundos na primeira vez.</div>
+        <canvas id="main-canvas"></canvas>
+    </div>
+
+    <!-- JS Separado (Carregado com defer para rodar após o HTML parse) -->
+    <script defer src="script.js"></script>
+
+</body>
+</html>
