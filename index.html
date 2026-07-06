@@ -32,7 +32,12 @@
         <span style="margin-left: 10px; color: #ccc;">Salvar como:</span>
         <div class="input-group">
             <input type="text" id="filename-input" placeholder="nome_arquivo" value="imagem_editada">
-            <span id="ext-label">.jpg</span>
+            <select id="ext-select">
+                <option value=".jpg">.jpg</option>
+                <option value=".jpeg">.jpeg</option>
+                <option value=".png">.png</option>
+                <option value=".webp">.webp</option>
+            </select>
         </div>
         
         <button id="btn-save" onclick="saveImage()">Salvar Recorte</button>

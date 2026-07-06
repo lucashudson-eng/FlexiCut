@@ -5,7 +5,7 @@ import os
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, 
     QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QFrame,
-    QSizePolicy, QLineEdit, QLabel, QMessageBox
+    QSizePolicy, QLineEdit, QLabel, QMessageBox, QComboBox
 )
 from PyQt5.QtCore import Qt, QRectF, QPointF
 from PyQt5.QtGui import QImage, QPainter, QPen, QColor, QBrush, QPolygonF, QCursor
@@ -281,9 +281,20 @@ class OpenCVApp(QMainWindow):
         self.txt_filename.setFixedWidth(200)
         fic_layout.addWidget(self.txt_filename)
         
-        self.lbl_extension = QLabel(".jpg")
-        self.lbl_extension.setStyleSheet("color: #888; font-weight: bold;")
-        fic_layout.addWidget(self.lbl_extension)
+        self.cb_extension = QComboBox()
+        self.cb_extension.addItems([".jpg", ".jpeg", ".png", ".webp"])
+        self.cb_extension.setStyleSheet("""
+            QComboBox {
+                background-color: transparent;
+                color: #888;
+                font-weight: bold;
+                border: none;
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+        """)
+        fic_layout.addWidget(self.cb_extension)
         
         bar_layout.addWidget(self.file_input_container)
         
@@ -325,7 +336,16 @@ class OpenCVApp(QMainWindow):
         
         # Define os campos
         self.txt_filename.setText(f"{name}_edited")
-        self.lbl_extension.setText(ext) # Mantém a extensão original (ex: .png)
+        
+        # Set QComboBox index
+        ext_lower = ext.lower()
+        idx = self.cb_extension.findText(ext_lower)
+        if idx != -1:
+            self.cb_extension.setCurrentIndex(idx)
+        else:
+            # Fallback/Default extension or add it if not exists?
+            # It's better to select .jpg or .png if unsupported
+            self.cb_extension.setCurrentIndex(0)
         
         img = cv2.imread(path)
         if img is not None:
@@ -368,9 +388,17 @@ class OpenCVApp(QMainWindow):
 
         try:
             name = self.txt_filename.text()
-            ext = self.lbl_extension.text()
+            ext = self.cb_extension.currentText()
             if not name:
                 name = "imagem_editada"
+            
+            # Remove any of the supported extensions if the user typed it
+            supported_exts = ['.jpg', '.jpeg', '.png', '.webp']
+            lower_name = name.lower()
+            for supported_ext in supported_exts:
+                if lower_name.endswith(supported_ext):
+                    name = name[:-len(supported_ext)]
+                    break
             
             filename = f"{name}{ext}"
             

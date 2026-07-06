@@ -64,12 +64,31 @@ function loadImageFile(file) {
     }
     
     document.getElementById('filename-input').value = originalFileName + "_edited";
-    document.getElementById('ext-label').innerText = originalExt;
+    
+    const extSelect = document.getElementById('ext-select');
+    if (extSelect) {
+        const normExt = originalExt.toLowerCase();
+        let matched = false;
+        for (let i = 0; i < extSelect.options.length; i++) {
+            if (extSelect.options[i].value === normExt) {
+                extSelect.selectedIndex = i;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            extSelect.value = '.jpg';
+        }
+    }
 
     const reader = new FileReader();
     reader.onload = (evt) => {
         imgElement = new Image();
         imgElement.onload = () => {
+            const loadingMsg = document.getElementById('loading-msg');
+            if (loadingMsg) {
+                loadingMsg.style.display = 'none';
+            }
             resetView();
             draw();
         };
@@ -297,12 +316,29 @@ function saveImage() {
 
         let link = document.createElement('a');
         let inputName = document.getElementById('filename-input').value || 'imagem_editada';
-        if (!inputName.toLowerCase().endsWith(originalExt)) {
-             inputName += originalExt;
+        
+        const extSelect = document.getElementById('ext-select');
+        const chosenExt = extSelect ? extSelect.value : '.jpg';
+        
+        // Remove existing extension if it ends with any of the supported ones
+        const supportedExts = ['.jpg', '.jpeg', '.png', '.webp'];
+        let lowerName = inputName.toLowerCase();
+        for (let ext of supportedExts) {
+            if (lowerName.endsWith(ext)) {
+                inputName = inputName.slice(0, -ext.length);
+                break;
+            }
         }
+        inputName += chosenExt;
         link.download = inputName;
         
-        let mime = (originalExt.toLowerCase() === '.png') ? 'image/png' : 'image/jpeg';
+        let mime = 'image/jpeg';
+        if (chosenExt === '.png') {
+            mime = 'image/png';
+        } else if (chosenExt === '.webp') {
+            mime = 'image/webp';
+        }
+        
         link.href = tempCanvas.toDataURL(mime, 0.9);
         link.click();
 

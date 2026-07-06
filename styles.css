@@ -62,11 +62,19 @@ button:hover {
     width: 200px;
 }
 
-#ext-label {
+#ext-select {
+    background: transparent;
+    border: none;
     color: #888;
     font-weight: bold;
     padding-right: 5px;
-    user-select: none;
+    outline: none;
+    cursor: pointer;
+}
+
+#ext-select option {
+    background-color: #1e1e1e;
+    color: #ddd;
 }
 
 #file-input {
